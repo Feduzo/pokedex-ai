@@ -2,48 +2,48 @@
 
 ![CI](https://github.com/Feduzo/pokedex-ai/actions/workflows/ci.yml/badge.svg)
 
-A Pokédex for the first two generations with an AI assistant: pick a Pokémon, check its data and chat with **Professor Oak** (Professor Carvalho) about types, weaknesses and strategy. The chat answers with the selected Pokémon as context.
+Uma Pokédex das duas primeiras gerações com um assistente de IA: escolha um Pokémon, veja seus dados e converse com o **Professor Carvalho** sobre tipos, fraquezas e estratégias. O chat responde com o contexto do Pokémon selecionado.
 
-This project started as the technical challenge of a software engineering internship selection process, which I passed. Afterwards I kept improving it so it runs on any OS without needing an API key.
+O projeto nasceu como desafio técnico de um processo seletivo de estágio em Engenharia de Software, no qual fui aprovado. Depois continuei evoluindo para que ele rode em qualquer sistema e sem depender de chave de API.
 
-![Pokédex main screen](docs/screenshots/home.png)
+![Tela principal da Pokédex](docs/screenshots/home.png)
 
-![Chat with Professor Oak](docs/screenshots/chat.png)
+![Conversa com o Professor Carvalho](docs/screenshots/chat.png)
 
-> The chat screenshot was generated with the `mistral` model running locally on Ollama. The professor answers in Brazilian Portuguese.
+> O print do chat foi gerado com o modelo `mistral` rodando localmente no Ollama.
 
-## Features
+## Funcionalidades
 
-- All 251 Pokémon from Generations 1 and 2, with search by name and batch loading.
-- Details with official artwork, types, stats, height, weight, ability and cry.
-- Chat with Professor Oak, who receives the Pokémon's types, abilities and stats as context.
-- Configurable LLM: **local Ollama** (no key, no cost) or **OpenRouter** (optional).
-- The backend proxies every LLM call, so no key ever reaches the browser.
+- Lista dos 251 Pokémon (Gerações 1 e 2), com busca por nome e carregamento em lotes.
+- Detalhes com arte oficial, tipos, atributos, altura, peso, habilidade e som.
+- Chat com o Professor Carvalho, que recebe tipos, habilidades e atributos do Pokémon como contexto.
+- LLM configurável: **Ollama local** (sem chave e sem custo) ou **OpenRouter** (opcional).
+- O backend intermedia a chamada à LLM, então nenhuma chave chega ao navegador.
 
-## Tech stack
+## Stack
 
-| Layer | Technologies |
+| Camada | Tecnologias |
 | --- | --- |
 | Frontend | React 19, Vite |
 | Backend | FastAPI, httpx, python-dotenv |
-| Data | [PokeAPI](https://pokeapi.co) |
-| LLM | Ollama (local) or OpenRouter |
-| Quality | ESLint, pytest, GitHub Actions |
+| Dados | [PokeAPI](https://pokeapi.co) |
+| LLM | Ollama (local) ou OpenRouter |
+| Qualidade | ESLint, pytest, GitHub Actions |
 
-## How it works
+## Como funciona
 
 ```text
-Browser ──► React (Vite)
-               ├──► PokeAPI          (Pokémon list and details)
-               └──► FastAPI /chat/   ──► Ollama (default)
-                                     └─► OpenRouter (if a key is set)
+Navegador ──► React (Vite)
+                 ├──► PokeAPI          (lista e detalhes dos Pokémon)
+                 └──► FastAPI /chat/   ──► Ollama (padrão)
+                                       └─► OpenRouter (se houver chave)
 ```
 
-In production (`npm start`), FastAPI also serves the frontend build, so everything runs on a single port.
+Em produção (`npm start`), o próprio FastAPI serve o build do frontend, então tudo roda em uma única porta.
 
-## Running it
+## Como rodar
 
-Requirements: **Node.js 18+** and **Python 3.10+**. Works on Windows, macOS and Linux.
+Requisitos: **Node.js 18+** e **Python 3.10+**. Funciona em Windows, macOS e Linux.
 
 ```bash
 git clone https://github.com/Feduzo/pokedex-ai.git
@@ -51,74 +51,74 @@ cd pokedex-ai
 npm start
 ```
 
-Open **http://localhost:8000**.
+Acesse **http://localhost:8000**.
 
-On the first run, `scripts/run.mjs` takes care of everything:
+Na primeira execução o script `scripts/run.mjs` cuida de tudo:
 
-1. creates the virtual environment and installs backend and frontend dependencies;
-2. asks for an OpenRouter key. Press **Enter** to use **local Ollama** instead: it installs Ollama (after confirmation), starts the service and pulls the `llama3.2` model;
-3. builds the frontend and starts the server.
+1. cria o ambiente virtual e instala as dependências do backend e do frontend;
+2. pergunta pela sua chave do OpenRouter. Se você apertar **Enter**, ele usa o **Ollama local**: instala (com confirmação), inicia o serviço e baixa o modelo `llama3.2`;
+3. gera o build do frontend e sobe o servidor.
 
-Your choice is saved in `backend/.env`, which is ignored by Git.
+Sua escolha fica salva em `backend/.env`, que é ignorado pelo Git.
 
-### Choosing the LLM
+### Escolhendo a LLM
 
-| Option | How to use |
+| Opção | Como usar |
 | --- | --- |
-| **Local Ollama** (default) | Nothing to configure. To set it up by hand, install [Ollama](https://ollama.com) and run `ollama pull llama3.2`. |
-| **OpenRouter** | Create a free key at [openrouter.ai/keys](https://openrouter.ai/keys) and put it in `backend/.env`. When a key is set it takes priority over Ollama and uses a free (`:free`) model. |
+| **Ollama local** (padrão) | Nada a configurar. Manualmente: instale o [Ollama](https://ollama.com) e rode `ollama pull llama3.2`. |
+| **OpenRouter** | Crie uma chave gratuita em [openrouter.ai/keys](https://openrouter.ai/keys) e coloque em `backend/.env`. Com a chave definida, ela tem prioridade sobre o Ollama e usa um modelo gratuito (`:free`). |
 
 ```bash
 # backend/.env
-OPENROUTER_API_KEY=your_key_here
+OPENROUTER_API_KEY=sua_chave_aqui
 ```
 
-Optional variables: `OPENROUTER_MODEL`, `OLLAMA_URL` and `OLLAMA_MODEL` (see `backend/.env.example`).
+Variáveis opcionais: `OPENROUTER_MODEL`, `OLLAMA_URL` e `OLLAMA_MODEL` (veja `backend/.env.example`).
 
-> Never commit your `.env`. The key stays on your machine.
+> Nunca versione o `.env`. A chave fica só na sua máquina.
 
-### Development mode
+### Modo desenvolvimento
 
 ```bash
 npm run dev
 ```
 
-Backend with reload on `http://localhost:8000` and frontend with hot reload on `http://localhost:5173`.
+Backend com reload em `http://localhost:8000` e frontend com hot reload em `http://localhost:5173`.
 
-## Tests and quality
+## Testes e qualidade
 
 ```bash
-npm test        # backend tests (pytest)
-npm run lint    # ESLint on the frontend
-npm run build   # production build
+npm test        # testes do backend (pytest)
+npm run lint    # ESLint no frontend
+npm run build   # build de produção
 ```
 
-CI (GitHub Actions) runs lint, build and tests on every push.
+O CI (GitHub Actions) roda lint, build e testes a cada push.
 
-## Technical decisions
+## Decisões técnicas
 
-- **Backend as the LLM proxy:** keeps keys out of the frontend and allows switching providers without touching the UI.
-- **Provider with fallback:** without a key the app uses local Ollama, so anyone can run it with no sign-up and no cost.
-- **Config read at call time:** environment variables are resolved inside the function, not at import time, so they respect the `.env` loaded by `load_dotenv()`.
-- **Batch loading:** avoids a frozen screen while the 251 Pokémon arrive.
-- **Prompt with context:** types, abilities and stats are sent along with the question for more accurate answers.
-- **Single port in production:** FastAPI serves the frontend build, which makes it simpler to run and demo.
+- **Backend como intermediário da LLM:** evita expor chaves no frontend e permite trocar de provedor sem mexer na interface.
+- **Provedor com fallback:** se não há chave, o app usa o Ollama local. Assim o projeto roda para qualquer pessoa, sem cadastro nem custo.
+- **Configuração lida na hora da chamada:** as variáveis de ambiente são resolvidas dentro da função, e não na importação do módulo, para respeitar o `.env` carregado pelo `load_dotenv()`.
+- **Lista carregada em lotes:** evita uma tela travada enquanto os 251 Pokémon chegam.
+- **Prompt com contexto:** tipos, habilidades e atributos do Pokémon vão junto da pergunta para respostas mais precisas.
+- **Uma porta só em produção:** o FastAPI serve o build do frontend, o que simplifica rodar e demonstrar.
 
-## What was hard
+## O que foi difícil
 
-Getting the LLM to work inside the app took the most time. The challenge provided an API key, but wiring it in and sending the selected Pokémon as context to the model took several iterations. After that, the visual design was the next big hurdle.
+Fazer a LLM funcionar dentro do sistema foi o que mais tomou tempo. O desafio fornecia uma chave de API, mas encaixar a chamada e mandar o Pokémon selecionado como contexto para o modelo levou várias tentativas. Depois disso, o visual foi o próximo grande obstáculo.
 
-## What I learned
+## O que aprendi
 
-- How to integrate an LLM into a real application, from the prompt to the API layer.
-- How to structure a project in layers (frontend, backend, services) and justify each decision, which improved my software architecture skills a lot.
+- Como integrar uma LLM em uma aplicação de verdade, do prompt à camada de API.
+- Como estruturar um projeto em camadas (frontend, backend, serviços) e justificar cada decisão, o que melhorou bastante minha visão de arquitetura de software.
 
-## Next steps
+## Próximos passos
 
-- Expand the backend with more endpoints and more data per Pokémon.
-- Polish the frontend with animations and more sounds.
-- Add more generations, aiming for a complete Pokédex.
+- Expandir o backend com mais endpoints e mais dados por Pokémon.
+- Dar um polimento no frontend, com animações e mais sons.
+- Adicionar mais gerações, rumo a uma Pokédex completa.
 
-## License
+## Licença
 
 [MIT](LICENSE)
